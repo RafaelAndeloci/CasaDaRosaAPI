@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="CasaDaRosa.Domain/CasaDaRosa.Domain.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+</Solution>
