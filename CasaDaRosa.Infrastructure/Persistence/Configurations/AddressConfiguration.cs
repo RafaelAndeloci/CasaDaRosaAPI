@@ -1,0 +1,24 @@
+using CasaDaRosa.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace CasaDaRosa.Infrastructure.Persistence.Configurations;
+
+public sealed class AddressConfiguration : IEntityTypeConfiguration<Address>
+{
+    public void Configure(EntityTypeBuilder<Address> builder)
+    {
+        builder.ToTable("Addresses");
+
+        builder.HasKey(x => x.Id);
+
+        builder.Property(x => x.Street).HasMaxLength(200).IsRequired();
+        builder.Property(x => x.Number).HasMaxLength(20).IsRequired();
+        builder.Property(x => x.Neighborhood).HasMaxLength(100).IsRequired();
+        builder.Property(x => x.City).HasMaxLength(100).IsRequired();
+        builder.Property(x => x.State).HasMaxLength(2).IsRequired();
+        builder.Property(x => x.ZipCode).HasMaxLength(10).IsRequired();
+        builder.Property(x => x.Complement).HasMaxLength(200);
+        builder.Property(x => x.Reference).HasMaxLength(200);
+    }
+}
