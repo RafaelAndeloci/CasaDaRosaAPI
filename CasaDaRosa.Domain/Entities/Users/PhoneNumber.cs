@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
+using CasaDaRosa.Domain.Entities.Users.Exceptions;
 
 namespace CasaDaRosa.Domain.Entities.Users;
 
@@ -19,7 +15,7 @@ public partial record PhoneNumber
     public static PhoneNumber Create(string formattedValue)
     {
         if (!PhoneNumberRegex().IsMatch(formattedValue))
-            throw new ArgumentException("Invalid phone number format. Expected format: +CC (AC) VALUE (e.g +55 16 9123-1234)", nameof(formattedValue));
+            throw new InvalidPhoneNumberFormatException();
         var parts = formattedValue.Split(new[] { ' ', '(', ')', '-' }, StringSplitOptions.RemoveEmptyEntries);
         var countryCode = short.Parse(parts[0].TrimStart('+'));
         var areaCode = short.Parse(parts[1]);

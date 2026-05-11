@@ -1,4 +1,5 @@
 using CasaDaRosa.Domain.Abstractions;
+using CasaDaRosa.Domain.Entities.Orders.Exceptions;
 using CasaDaRosa.Domain.Entities.Orders.Events;
 using CasaDaRosa.Domain.Exceptions;
 using CasaDaRosa.Domain.ValueObjects;
@@ -43,6 +44,21 @@ public class Order : AuditableEntity, IAggregateRoot
         PaymentMethod paymentMethod, 
         DateTime deliveryAvailableFromUtc)
     {
+        if (userId == Guid.Empty)
+        {
+            throw new OrderUserRequiredException();
+        }
+
+        if (addressId == Guid.Empty)
+        {
+            throw new OrderAddressRequiredException();
+        }
+
+        if (deliveryAvailableFromUtc <= DateTime.UtcNow)
+        {
+            throw new OrderDeliveryWindowInvalidException();
+        }
+
         return new(
             id: Guid.NewGuid(),
             userId: userId,
@@ -56,6 +72,11 @@ public class Order : AuditableEntity, IAggregateRoot
 
     public Result AddItem(OrderItem item)
     {
+        if (item is null)
+        {
+            throw new OrderItemRequiredException();
+        }
+
         _items.Add(item);
         RecalculateTotal();
         Touch();
@@ -70,7 +91,7 @@ public class Order : AuditableEntity, IAggregateRoot
             return Result.Failure(OrderErrors.NotPending);
         }
         Status = OrderStatus.Confirmed;
-        RaiseDomainEvent(new OrderPlacedDomainEvent(Id));
+        RaiseDomainEvent(new OrderPlacedDomainEvent(Id, UserId, TotalAmount, DeliveryAvailableFromUtc));
         Touch();
         return Result.Success();
     }

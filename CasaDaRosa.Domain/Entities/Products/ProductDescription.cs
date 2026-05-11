@@ -1,5 +1,5 @@
 using CasaDaRosa.Domain.Abstractions;
-using CasaDaRosa.Domain.Exceptions;
+using CasaDaRosa.Domain.Entities.Products.Exceptions;
 
 namespace CasaDaRosa.Domain.Entities.Products;
 
@@ -16,14 +16,14 @@ public sealed class ProductDescription : ValueObject
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            throw new DomainValidationException("product.description.invalid", "Product description cannot be empty.");
+            throw new ProductDescriptionEmptyException();
         }
 
         var normalizedValue = value.Trim();
 
         if (normalizedValue.Length > 1000)
         {
-            throw new DomainValidationException("product.description.invalid", "Product description must have a maximum of 1000 characters.");
+            throw new ProductDescriptionTooLongException();
         }
 
         return new ProductDescription(normalizedValue);

@@ -1,4 +1,6 @@
-﻿namespace CasaDaRosa.Domain.ValueObjects;
+﻿using CasaDaRosa.Domain.ValueObjects.Exceptions;
+
+namespace CasaDaRosa.Domain.ValueObjects;
 
 public record Currency
 {
@@ -14,7 +16,7 @@ public record Currency
     public static Currency FromCode(string code)
     {
         return All.FirstOrDefault(c => c.Code == code) ?? 
-               throw new ApplicationException($"The currency code is invalid: {code}");
+               throw new CurrencyCodeInvalidException(code);
     }
 
     public static readonly IReadOnlyCollection<Currency> All = new[]

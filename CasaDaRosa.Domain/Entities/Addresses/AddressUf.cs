@@ -1,4 +1,4 @@
-﻿using CasaDaRosa.Domain.Exceptions;
+﻿using CasaDaRosa.Domain.Entities.Addresses.Exceptions;
 
 namespace CasaDaRosa.Domain.Entities.Addresses;
 
@@ -11,7 +11,7 @@ public record AddressUf
     {
         if (string.IsNullOrWhiteSpace(abbreviated))
         {
-            throw new DomainValidationException("address.uf.invalid", "State abbreviation is required.");
+            throw new AddressUfRequiredException();
         }
 
         return new AddressUf

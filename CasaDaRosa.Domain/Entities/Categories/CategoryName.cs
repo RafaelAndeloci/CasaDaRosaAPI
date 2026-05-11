@@ -1,5 +1,5 @@
 using CasaDaRosa.Domain.Abstractions;
-using CasaDaRosa.Domain.Exceptions;
+using CasaDaRosa.Domain.Entities.Categories.Exceptions;
 
 namespace CasaDaRosa.Domain.Entities.Categories;
 
@@ -16,14 +16,14 @@ public sealed class CategoryName : ValueObject
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            throw new DomainValidationException("category.name.invalid", "Category name is required.");
+            throw new CategoryNameRequiredException();
         }
 
         var normalizedValue = value.Trim();
 
         if (normalizedValue.Length > 120)
         {
-            throw new DomainValidationException("category.name.invalid", "Category name must have a maximum of 120 characters.");
+            throw new CategoryNameTooLongException();
         }
 
         return new CategoryName(normalizedValue);

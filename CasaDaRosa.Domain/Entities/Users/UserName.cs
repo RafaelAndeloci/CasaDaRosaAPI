@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
+using CasaDaRosa.Domain.Entities.Users.Exceptions;
 
 namespace CasaDaRosa.Domain.Entities.Users;
 
@@ -16,13 +13,24 @@ public record UserName
 
     public static UserName Create(string fullname)
     {
-        var parts = fullname.Split(" ");
+        if (string.IsNullOrWhiteSpace(fullname))
+        {
+            throw new UserNameRequiredException();
+        }
+
+        var normalizedFullName = fullname.Trim();
+        var parts = normalizedFullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length < 2)
+        {
+            throw new UserNameInvalidException();
+        }
 
         return new()
         {
             FirstName = parts[0],
-            FullName = fullname,
-            Surname = fullname.Replace($"{parts[0]} ", ""),
+            FullName = normalizedFullName,
+            Surname = string.Join(' ', parts.Skip(1)),
         };
     }
     public string GetInitials()

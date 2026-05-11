@@ -1,4 +1,5 @@
 using CasaDaRosa.Domain.Abstractions;
+using CasaDaRosa.Domain.Entities.Products.Exceptions;
 
 namespace CasaDaRosa.Domain.Entities.Products;
 
@@ -18,7 +19,7 @@ public sealed class Rating : ValueObject
 
         if (!isWithinRange || !isHalfStep)
         {
-            throw new ArgumentOutOfRangeException(nameof(value), "Rating must be between 0 and 5 in increments of 0.5.");
+            throw new ProductRatingOutOfRangeException();
         }
 
         return new Rating(value);

@@ -1,4 +1,4 @@
-﻿using CasaDaRosa.Domain.Exceptions;
+﻿using CasaDaRosa.Domain.Entities.Addresses.Exceptions;
 
 namespace CasaDaRosa.Domain.Entities.Addresses;
 
@@ -48,13 +48,13 @@ public record AddressUfAbbreviation
     {
         if (string.IsNullOrWhiteSpace(code))
         {
-            throw new DomainValidationException("address.uf.invalid", "State abbreviation is required.");
+            throw new AddressUfRequiredException();
         }
 
         var normalizedCode = code.Trim().ToUpperInvariant();
 
         return All.FirstOrDefault(c => c.Code == normalizedCode) ??
-               throw new DomainValidationException("address.uf.invalid", $"The UF code is invalid: {code}");
+               throw new AddressUfCodeInvalidException(code);
     }
 
     public static readonly IReadOnlyCollection<AddressUfAbbreviation> All = new[]

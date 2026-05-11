@@ -1,4 +1,5 @@
 using CasaDaRosa.Domain.Abstractions;
+using CasaDaRosa.Domain.Entities.Products.Exceptions;
 using CasaDaRosa.Domain.Exceptions;
 
 namespace CasaDaRosa.Domain.Entities.Products;
@@ -49,7 +50,7 @@ public class Review : AuditableEntity
 
         if (normalizedComment.Length > 1000)
         {
-            throw new DomainValidationException("review.comment.invalid", "Review comment must have a maximum of 1000 characters.");
+            throw new ReviewCommentTooLongException();
         }
 
         return normalizedComment;

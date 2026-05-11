@@ -1,5 +1,5 @@
-using System.Runtime.CompilerServices;
 using CasaDaRosa.Domain.Abstractions;
+using CasaDaRosa.Domain.Entities.Products.Exceptions;
 using CasaDaRosa.Domain.Exceptions;
 using CasaDaRosa.Domain.ValueObjects;
 
@@ -39,14 +39,29 @@ public class Product : AuditableEntity, IAggregateRoot
 
     public static Product Create(Guid categoryId, string name, string? description, Money price, int stockQuantity)
     {
+        if (categoryId == Guid.Empty)
+        {
+            throw new ProductCategoryRequiredException();
+        }
+
+        var stockQuantityResult = StockQuantity.Create(stockQuantity);
+
+        if (stockQuantityResult.IsFailure)
+        {
+            throw new ProductStockQuantityInvalidDomainException();
+        }
+
         var product = new Product(
-            categoryId,
+            id: Guid.NewGuid(),
+            categoryId: categoryId,
             ProductName.Create(name),
             string.IsNullOrWhiteSpace(description) ? null : ProductDescription.Create(description),
             price,
-            StockQuantity.Create(stockQuantity),
-            true
+            stockQuantityResult.Value,
+            isActive: true,
+            reviews: []
         );
+
         return product;
     }
 
@@ -62,12 +77,19 @@ public class Product : AuditableEntity, IAggregateRoot
 
     public Result AddReview(Review review)
     {
+        if (review is null)
+        {
+            throw new ProductReviewRequiredException();
+        }
+
         if(_reviews.Any(r => r.Id == review.Id))
         {
             return Result.Failure(ProductErrors.DuplicatedReview);
         }
 
         _reviews.Add(review);
+        Touch();
+
         return Result.Success();
     }
 }

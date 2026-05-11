@@ -1,5 +1,5 @@
 using CasaDaRosa.Domain.Abstractions;
-using CasaDaRosa.Domain.Exceptions;
+using CasaDaRosa.Domain.ValueObjects.Exceptions;
 
 namespace CasaDaRosa.Domain.ValueObjects;
 
@@ -9,7 +9,7 @@ public sealed record Money(decimal Amount, Currency? Currency)
     {
         if (first.Currency != second.Currency)
         {
-            throw new InvalidOperationException("Currencies have to be equal");
+            throw new CurrencyMismatchException();
         }
 
         return new Money(first.Amount + second.Amount, first.Currency);
@@ -19,7 +19,7 @@ public sealed record Money(decimal Amount, Currency? Currency)
     {
         if (first.Currency != second.Currency)
         {
-            throw new InvalidOperationException("Currencies have to be equal");
+            throw new CurrencyMismatchException();
         }
 
         return new Money(first.Amount - second.Amount, first.Currency);

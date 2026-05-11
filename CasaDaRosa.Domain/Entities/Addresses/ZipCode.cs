@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
+using CasaDaRosa.Domain.Entities.Addresses.Exceptions;
 
 namespace CasaDaRosa.Domain.Entities.Addresses;
 
@@ -34,11 +30,11 @@ public partial record ZipCode
     /// <exception cref="ArgumentException">Thrown if <paramref name="formattedValue"/> is not in the format '00000-000' or contains invalid characters.</exception>
     public static ZipCode Create(string formattedValue)
     {
-        if(string.IsNullOrEmpty(formattedValue)) throw new ArgumentNullException("Cannot create a zip code without a value.");
-        if(!Regex.IsMatch(formattedValue, @"^\d{5}-\d{3}$")) throw new ArgumentException("Zip code must be in the format '00000-000'.");         
+        if (string.IsNullOrWhiteSpace(formattedValue)) throw new ZipCodeRequiredException();
+        if (!Regex.IsMatch(formattedValue, @"^\d{5}-\d{3}$")) throw new ZipCodeInvalidFormatException();         
             
         var rawValue = formattedValue.Replace("-", "");
-        if (!short.TryParse(rawValue, out var parsedRawValue)) throw new ArgumentException("Zip code must contain only numbers and a hyphen.");
+        if (!short.TryParse(rawValue, out var parsedRawValue)) throw new ZipCodeOnlyNumbersAndHyphenException();
 
         return new ZipCode
         {
@@ -58,7 +54,7 @@ public partial record ZipCode
     /// <exception cref="ArgumentException">Thrown when the provided value does not contain exactly 8 digits.</exception>
     public static ZipCode Create(short value)
     {
-        if (value.ToString().Length != 8) throw new ArgumentException("Zip code must be in the format '00000-000'.");
+        if (value.ToString().Length != 8) throw new ZipCodeInvalidFormatException();
         var formattedValue = $"{value.ToString().Substring(0, 5)}-{value.ToString().Substring(5, 3)}";
         return new ZipCode
         {
@@ -85,7 +81,7 @@ public partial record ZipCode
     /// <exception cref="ArgumentException">Thrown if the string representation of value does not contain exactly 8 digits.</exception>
     public static string Format(short value)
     {
-        if (value.ToString().Length != 8) throw new ArgumentException("Zip code must have 8 numbers in order to format to '00000-000'.");
+        if (value.ToString().Length != 8) throw new ZipCodeEightDigitsRequiredException();
         return $"{value.ToString().Substring(0, 5)}-{value.ToString().Substring(5, 3)}";
     }
 
@@ -103,9 +99,9 @@ public partial record ZipCode
     public static string Format(string value)
     {
         if(ZipCodeFormatRegex().IsMatch(value)) return value;
-        if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("Cannot format a zip code without a value.");
-        if (value.Length > 8) throw new ArgumentException("Zip code must have 8 characters '00000-000'.");
-        if (!RawZipCodeRegex().IsMatch(value)) throw new ArgumentException("Zip code must contain only numbers.");
+        if (string.IsNullOrWhiteSpace(value)) throw new ZipCodeRequiredException();
+        if (value.Length > 8) throw new ZipCodeEightDigitsRequiredException();
+        if (!RawZipCodeRegex().IsMatch(value)) throw new ZipCodeOnlyNumbersAndHyphenException();
 
         return $"{value.Substring(0, 5)}-{value.ToString().Substring(5, 3)}";
     }

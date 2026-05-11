@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CasaDaRosa.Domain.Entities.Addresses.Exceptions;
 
 namespace CasaDaRosa.Domain.Entities.Addresses;
 
@@ -14,8 +10,8 @@ public record AddressNumber
 
     public static AddressNumber Create(short value)
     {
-        if (value <= 0) throw new ArgumentException("Address number must be greater than zero.");
-        if (value.ToString().Length > 9) throw new ArgumentException("Address number cannot exceed 9 digits.");
+        if (value <= 0) throw new AddressNumberMustBeGreaterThanZeroException();
+        if (value.ToString().Length > 9) throw new AddressNumberTooLargeException();
         return new AddressNumber() with { Value = value };
     }
 

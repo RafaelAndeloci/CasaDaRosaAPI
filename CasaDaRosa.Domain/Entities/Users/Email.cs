@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CasaDaRosa.Domain.Entities.Users.Exceptions;
 
 namespace CasaDaRosa.Domain.Entities.Users;
 
@@ -16,11 +12,15 @@ public record Email
 
     public static Email Create(string value)
     {
-        if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("Cannot create an email without a value.");
-        if (!IsValidEmail(value)) throw new ArgumentException("Invalid email format.");
+        if (string.IsNullOrWhiteSpace(value)) throw new EmailRequiredException();
+
+        var normalizedValue = value.Trim();
+
+        if (!IsValidEmail(normalizedValue)) throw new InvalidEmailFormatException();
+
         return new Email
         {
-            Value = value
+            Value = normalizedValue
         };
     }
 

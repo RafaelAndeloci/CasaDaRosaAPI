@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CasaDaRosa.Domain.Entities.Addresses.Exceptions;
 
 namespace CasaDaRosa.Domain.Entities.Addresses;
 
@@ -14,8 +9,8 @@ public record Street
 
     public static Street Create(string value)
     {
-        if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("Cannot create a street without a value.");
-        return new Street() with { Value = value };
+        if (string.IsNullOrWhiteSpace(value)) throw new StreetRequiredException();
+        return new Street() with { Value = value.Trim() };
     }
 
     public override string ToString()
