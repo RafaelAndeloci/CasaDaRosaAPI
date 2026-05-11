@@ -1,34 +1,48 @@
 using CasaDaRosa.Domain.Abstractions;
-using CasaDaRosa.Domain.Exceptions;
+using CasaDaRosa.Domain.ValueObjects.Exceptions;
 
 namespace CasaDaRosa.Domain.ValueObjects;
 
-public sealed class Money : ValueObject
+public sealed record Money(decimal Amount, Currency? Currency)
 {
-    public decimal Amount { get; }
-
-    private Money(decimal amount)
+    public static Money operator +(Money first, Money second)
     {
-        Amount = amount;
-    }
-
-    public static Money Create(decimal amount)
-    {
-        if (amount <= 0)
+        if (first.Currency != second.Currency)
         {
-            throw new DomainValidationException("money.invalid", "Amount must be greater than zero.");
+            throw new CurrencyMismatchException();
         }
 
-        return new Money(decimal.Round(amount, 2, MidpointRounding.ToEven));
+        return new Money(first.Amount + second.Amount, first.Currency);
     }
 
-    protected override IEnumerable<object?> GetEqualityComponents()
+    public static Money operator -(Money first, Money second)
     {
-        yield return Amount;
+        if (first.Currency != second.Currency)
+        {
+            throw new CurrencyMismatchException();
+        }
+
+        return new Money(first.Amount - second.Amount, first.Currency);
     }
 
-    public override string ToString()
+    public static Money operator *(Money first, decimal multiplier)
     {
-        return Amount.ToString("0.00");
+        return new Money(first.Amount * multiplier, first.Currency);
     }
+    public static Money operator *(Money first, int multiplier)
+    {
+        return new Money(first.Amount * multiplier, first.Currency);
+    }
+    public static Money operator *(Money first, float multiplier)
+    {
+        return new Money(first.Amount * (decimal)multiplier, first.Currency);
+    }
+    public static Money operator *(Money first, double multiplier)
+    {
+        return new Money(first.Amount * (decimal)multiplier, first.Currency);
+    }
+
+    public static Money Zero () => new(0, Currency.None);
+    public static Money Zero(Currency currency) => new (0, currency);
+    public bool IsZero() => this == Zero();
 }

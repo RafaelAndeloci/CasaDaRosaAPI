@@ -1,4 +1,9 @@
-using CasaDaRosa.Domain.Entities;
+using CasaDaRosa.Domain.Entities.Addresses;
+using CasaDaRosa.Domain.Entities.Carts;
+using CasaDaRosa.Domain.Entities.Categories;
+using CasaDaRosa.Domain.Entities.Orders;
+using CasaDaRosa.Domain.Entities.Products;
+using CasaDaRosa.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace CasaDaRosa.Infrastructure.Persistence;
