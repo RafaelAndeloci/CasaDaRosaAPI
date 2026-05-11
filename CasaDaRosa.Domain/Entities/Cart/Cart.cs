@@ -1,7 +1,6 @@
 using CasaDaRosa.Domain.Abstractions;
-using CasaDaRosa.Domain.Enums;
 
-namespace CasaDaRosa.Domain.Entities;
+namespace CasaDaRosa.Domain.Entities.Cart;
 
 public class Cart : AuditableEntity, IAggregateRoot
 {

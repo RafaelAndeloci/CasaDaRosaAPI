@@ -1,6 +1,6 @@
 using CasaDaRosa.Domain.Abstractions;
 
-namespace CasaDaRosa.Domain.Entities;
+namespace CasaDaRosa.Domain.Entities.Cart;
 
 public class CartItem : AuditableEntity
 {
