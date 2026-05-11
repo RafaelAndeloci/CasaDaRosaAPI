@@ -1,4 +1,4 @@
-using CasaDaRosa.Domain.Entities;
+using CasaDaRosa.Domain.Entities.Order;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

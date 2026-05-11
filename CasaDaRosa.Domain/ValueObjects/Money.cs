@@ -3,32 +3,19 @@ using CasaDaRosa.Domain.Exceptions;
 
 namespace CasaDaRosa.Domain.ValueObjects;
 
-public sealed class Money : ValueObject
+public sealed record Money(decimal Amount, Currency Currency)
 {
-    public decimal Amount { get; }
-
-    private Money(decimal amount)
+    public static Money operator +(Money first, Money second)
     {
-        Amount = amount;
-    }
-
-    public static Money Create(decimal amount)
-    {
-        if (amount <= 0)
+        if (first.Currency != second.Currency)
         {
-            throw new DomainValidationException("money.invalid", "Amount must be greater than zero.");
+            throw new InvalidOperationException("Currencies have to be equal");
         }
 
-        return new Money(decimal.Round(amount, 2, MidpointRounding.ToEven));
+        return new Money(first.Amount + second.Amount, first.Currency);
     }
 
-    protected override IEnumerable<object?> GetEqualityComponents()
-    {
-        yield return Amount;
-    }
-
-    public override string ToString()
-    {
-        return Amount.ToString("0.00");
-    }
+    public static Money Zero () => new(0, Currency.None);
+    public static Money Zero(Currency currency) => new (0, currency);
+    public bool IsZero() => this == Zero();
 }

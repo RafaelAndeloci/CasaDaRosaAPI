@@ -2,7 +2,7 @@ using CasaDaRosa.Domain.Abstractions;
 using CasaDaRosa.Domain.Exceptions;
 using CasaDaRosa.Domain.ValueObjects;
 
-namespace CasaDaRosa.Domain.Entities;
+namespace CasaDaRosa.Domain.Entities.Products;
 
 public class Product : AuditableEntity, IAggregateRoot
 {
@@ -16,14 +16,12 @@ public class Product : AuditableEntity, IAggregateRoot
     private readonly List<Review> _reviews = [];
     public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
 
-    private Product()
-    {
-    }
+    private Product() { }
 
-    public Product(Guid categoryId, string name, string? description, decimal price, int stockQuantity)
+    public Product(Guid categoryId, string name, string? description, Money price, int stockQuantity)
     {
         SetCategory(categoryId);
-        UpdateDetails(ProductName.Create(name), string.IsNullOrWhiteSpace(description) ? null : ProductDescription.Create(description), Money.Create(price));
+        UpdateDetails(ProductName.Create(name), string.IsNullOrWhiteSpace(description) ? null : ProductDescription.Create(description), price);
         UpdateStock(StockQuantity.Create(stockQuantity));
     }
 
@@ -71,7 +69,7 @@ public class Product : AuditableEntity, IAggregateRoot
             throw new DomainValidationException("product.review.user.invalid", "Review user is required.");
         }
 
-        var review = new Review(Id, userId, ValueObjects.Rating.Create(ratingValue), comment);
+        var review = new Review(Id, userId, Rating.Create(ratingValue), comment);
         _reviews.Add(review);
         SetUpdatedAtUtc();
 

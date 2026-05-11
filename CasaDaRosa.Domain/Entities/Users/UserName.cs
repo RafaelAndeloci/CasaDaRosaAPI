@@ -38,4 +38,9 @@ public record UserName
         }
         return initials.ToString().ToUpper();
     }
+
+    public override string ToString()
+    { 
+        return FullName;
+    }
 }

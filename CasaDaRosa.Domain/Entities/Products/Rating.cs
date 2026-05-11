@@ -1,6 +1,6 @@
 using CasaDaRosa.Domain.Abstractions;
 
-namespace CasaDaRosa.Domain.ValueObjects;
+namespace CasaDaRosa.Domain.Entities.Products;
 
 public sealed class Rating : ValueObject
 {

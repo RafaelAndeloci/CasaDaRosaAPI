@@ -110,13 +110,13 @@ public partial record ZipCode
         return $"{value.Substring(0, 5)}-{value.ToString().Substring(5, 3)}";
     }
 
-    public override string ToString()
-    {
-        return FormattedValue;
-    }
-
     [GeneratedRegex(@"^\d{5}-\d{3}$")]
     public static partial Regex ZipCodeFormatRegex();
     [GeneratedRegex(@"^\d{8}$")]
     private static partial Regex RawZipCodeRegex();
+
+    public override string ToString()
+    {
+        return FormattedValue;
+    }
 }

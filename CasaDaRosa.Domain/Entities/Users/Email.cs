@@ -36,4 +36,9 @@ public record Email
             return false;
         }
     }
+
+    public override string ToString()
+    {
+        return Value;
+    }
 }

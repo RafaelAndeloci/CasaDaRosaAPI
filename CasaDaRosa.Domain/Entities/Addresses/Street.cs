@@ -17,4 +17,9 @@ public record Street
         if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("Cannot create a street without a value.");
         return new Street() with { Value = value };
     }
+
+    public override string ToString()
+    {
+        return Value;
+    }
 }

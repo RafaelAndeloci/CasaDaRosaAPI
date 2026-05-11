@@ -1,7 +1,7 @@
 using CasaDaRosa.Domain.Abstractions;
 using CasaDaRosa.Domain.Exceptions;
 
-namespace CasaDaRosa.Domain.Entities;
+namespace CasaDaRosa.Domain.Entities.Orders;
 
 public class OrderItem : AuditableEntity
 {

@@ -1,6 +1,6 @@
 using CasaDaRosa.Domain.Abstractions;
 
-namespace CasaDaRosa.Domain.Events.Orders;
+namespace CasaDaRosa.Domain.Entities.Orders.Events;
 
 public sealed record OrderPlacedDomainEvent(
     Guid OrderId,

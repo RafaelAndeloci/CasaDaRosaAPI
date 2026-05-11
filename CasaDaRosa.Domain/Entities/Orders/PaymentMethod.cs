@@ -1,4 +1,4 @@
-namespace CasaDaRosa.Domain.Enums;
+namespace CasaDaRosa.Domain.Entities.Orders;
 
 public enum PaymentMethod
 {

@@ -1,7 +1,8 @@
-using CasaDaRosa.Domain.Entities;
 using CasaDaRosa.Domain.Entities.Address;
 using CasaDaRosa.Domain.Entities.Cart;
 using CasaDaRosa.Domain.Entities.Category;
+using CasaDaRosa.Domain.Entities.Order;
+using CasaDaRosa.Domain.Entities.Products;
 using CasaDaRosa.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 

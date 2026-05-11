@@ -1,9 +1,8 @@
 using CasaDaRosa.Domain.Abstractions;
-using CasaDaRosa.Domain.Enums;
-using CasaDaRosa.Domain.Events.Orders;
+using CasaDaRosa.Domain.Entities.Orders.Events;
 using CasaDaRosa.Domain.Exceptions;
 
-namespace CasaDaRosa.Domain.Entities;
+namespace CasaDaRosa.Domain.Entities.Orders;
 
 public class Order : AuditableEntity, IAggregateRoot
 {

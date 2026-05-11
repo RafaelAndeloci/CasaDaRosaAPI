@@ -1,6 +1,6 @@
 using CasaDaRosa.Application.Abstractions;
 using CasaDaRosa.Application.Events;
-using CasaDaRosa.Domain.Events.Orders;
+using CasaDaRosa.Domain.Entities.Orders.Events;
 using MediatR;
 
 namespace CasaDaRosa.Application.Features.Orders.Events.OrderPlaced;

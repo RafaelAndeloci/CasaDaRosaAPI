@@ -1,4 +1,4 @@
-namespace CasaDaRosa.Domain.Entities.Cart;
+namespace CasaDaRosa.Domain.Entities.Carts;
 
 public enum CartStatus
 {

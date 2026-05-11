@@ -1,7 +1,6 @@
 using CasaDaRosa.Domain.Abstractions;
-using CasaDaRosa.Domain.ValueObjects;
 
-namespace CasaDaRosa.Domain.Entities.Category;
+namespace CasaDaRosa.Domain.Entities.Categories;
 
 public class Category : AuditableEntity, IAggregateRoot
 {

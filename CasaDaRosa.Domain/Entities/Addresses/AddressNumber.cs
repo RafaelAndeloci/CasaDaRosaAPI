@@ -18,4 +18,9 @@ public record AddressNumber
         if (value.ToString().Length > 9) throw new ArgumentException("Address number cannot exceed 9 digits.");
         return new AddressNumber() with { Value = value };
     }
+
+    public override string ToString()
+    {
+        return Value.ToString();
+    }
 }

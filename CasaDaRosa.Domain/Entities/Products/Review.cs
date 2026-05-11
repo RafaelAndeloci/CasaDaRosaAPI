@@ -1,8 +1,7 @@
 using CasaDaRosa.Domain.Abstractions;
 using CasaDaRosa.Domain.Exceptions;
-using CasaDaRosa.Domain.ValueObjects;
 
-namespace CasaDaRosa.Domain.Entities;
+namespace CasaDaRosa.Domain.Entities.Products;
 
 public class Review : AuditableEntity
 {

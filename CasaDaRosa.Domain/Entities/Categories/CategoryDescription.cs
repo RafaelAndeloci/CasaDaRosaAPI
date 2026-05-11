@@ -1,7 +1,7 @@
 using CasaDaRosa.Domain.Abstractions;
 using CasaDaRosa.Domain.Exceptions;
 
-namespace CasaDaRosa.Domain.ValueObjects;
+namespace CasaDaRosa.Domain.Entities.Categories;
 
 public sealed class CategoryDescription : ValueObject
 {
