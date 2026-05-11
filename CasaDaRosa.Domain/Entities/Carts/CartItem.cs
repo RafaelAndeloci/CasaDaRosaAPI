@@ -1,5 +1,5 @@
 using CasaDaRosa.Domain.Abstractions;
-using CasaDaRosa.Domain.Exceptions;
+using CasaDaRosa.Domain.Entities.Carts.Exceptions;
 using CasaDaRosa.Domain.ValueObjects;
 
 namespace CasaDaRosa.Domain.Entities.Carts;
@@ -23,21 +23,36 @@ public class CartItem : AuditableEntity
     {
         if (cartId == Guid.Empty)
         {
-            throw new DomainValidationException("cart_item.cart.invalid", "Cart item must be associated with a cart.");
+            throw new CartItemCartRequiredException();
         }
 
         if (productId == Guid.Empty)
         {
-            throw new DomainValidationException("cart_item.product.invalid", "Cart item product is required.");
+            throw new CartItemProductRequiredException();
         }
 
         if (quantity <= 0)
         {
-            throw new DomainValidationException("cart_item.quantity.invalid", "Cart item quantity must be greater than zero.");
+            throw new CartItemQuantityInvalidException();
         }
 
-        ArgumentNullException.ThrowIfNull(unitPrice);
+        if (unitPrice is null)
+        {
+            throw new CartItemUnitPriceRequiredException();
+        }
 
         return new CartItem(Guid.NewGuid(), cartId, productId, quantity, unitPrice);
+    }
+
+    public Result UpdateQuantity(int newQuantity)
+    {
+        if(newQuantity <= 0)
+        {
+            return Result.Failure(CartErrors.InvalidQuantity);
+        }
+
+        Quantity = newQuantity;
+        Touch();
+        return Result.Success();
     }
 }

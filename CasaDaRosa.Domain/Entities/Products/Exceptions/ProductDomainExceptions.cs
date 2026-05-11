@@ -25,3 +25,9 @@ public sealed class ProductRatingOutOfRangeException()
 
 public sealed class ReviewCommentTooLongException()
     : DomainValidationException("review.comment.invalid", "Review comment must have a maximum of 1000 characters.");
+
+public sealed class ReviewProductRequiredException()
+    : DomainValidationException("review.product.invalid", "Review product is required.");
+
+public sealed class ReviewUserRequiredException()
+    : DomainValidationException("review.user.invalid", "Review user is required.");

@@ -1,6 +1,5 @@
 using CasaDaRosa.Domain.Abstractions;
 using CasaDaRosa.Domain.Entities.Products.Exceptions;
-using CasaDaRosa.Domain.Exceptions;
 
 namespace CasaDaRosa.Domain.Entities.Products;
 
@@ -30,12 +29,24 @@ public class Review : AuditableEntity
         decimal ratingValue, 
         string? comment)
     {
+        if (productId == Guid.Empty)
+        {
+            throw new ReviewProductRequiredException();
+        }
+
+        if (userId == Guid.Empty)
+        {
+            throw new ReviewUserRequiredException();
+        }
+
+        var rating = Rating.Create(ratingValue);
         var validatedComment = ValidateComment(comment);
+
         return new Review(
             id: Guid.NewGuid(),
             productId: productId,
             userId: userId, 
-            ratingValue: ratingValue, 
+            ratingValue: rating.Value, 
             comment: validatedComment);
     }
 
