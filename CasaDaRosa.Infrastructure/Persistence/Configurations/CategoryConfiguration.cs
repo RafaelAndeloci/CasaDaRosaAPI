@@ -1,7 +1,7 @@
 using CasaDaRosa.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using CasaDaRosa.Domain.Entities.Category;
+using CasaDaRosa.Domain.Entities.Categories;
 
 namespace CasaDaRosa.Infrastructure.Persistence.Configurations;
 

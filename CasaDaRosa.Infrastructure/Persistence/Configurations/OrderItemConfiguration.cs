@@ -1,4 +1,4 @@
-using CasaDaRosa.Domain.Entities.Order;
+using CasaDaRosa.Domain.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -16,12 +16,39 @@ public sealed class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
             .HasMaxLength(150)
             .IsRequired();
 
-        builder.Property(x => x.UnitPrice)
-            .HasPrecision(18, 2)
-            .IsRequired();
+        builder.OwnsOne(x => x.UnitPrice, unitPriceBuilder =>
+        {
+            unitPriceBuilder.Property(x => x.Amount)
+                .HasColumnName(nameof(OrderItem.UnitPrice))
+                .HasPrecision(18, 2)
+                .IsRequired();
 
-        builder.Property(x => x.Total)
-            .HasPrecision(18, 2)
-            .IsRequired();
+            unitPriceBuilder.OwnsOne(x => x.Currency, currencyBuilder =>
+            {
+                currencyBuilder.Property(x => x.Code)
+                    .HasColumnName("UnitPriceCurrency")
+                    .HasMaxLength(3)
+                    .IsRequired(false);
+            });
+        });
+
+        builder.OwnsOne(x => x.Total, totalBuilder =>
+        {
+            totalBuilder.Property(x => x.Amount)
+                .HasColumnName(nameof(OrderItem.Total))
+                .HasPrecision(18, 2)
+                .IsRequired();
+
+            totalBuilder.OwnsOne(x => x.Currency, currencyBuilder =>
+            {
+                currencyBuilder.Property(x => x.Code)
+                    .HasColumnName("TotalCurrency")
+                    .HasMaxLength(3)
+                    .IsRequired(false);
+            });
+        });
+
+        builder.Navigation(x => x.UnitPrice).IsRequired();
+        builder.Navigation(x => x.Total).IsRequired();
     }
 }

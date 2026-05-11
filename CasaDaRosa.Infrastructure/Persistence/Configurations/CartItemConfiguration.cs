@@ -1,4 +1,4 @@
-using CasaDaRosa.Domain.Entities.Cart;
+using CasaDaRosa.Domain.Entities.Carts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,8 +12,22 @@ public sealed class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.UnitPrice)
-            .HasPrecision(18, 2)
-            .IsRequired();
+        builder.OwnsOne(x => x.UnitPrice, unitPriceBuilder =>
+        {
+            unitPriceBuilder.Property(x => x.Amount)
+                .HasColumnName(nameof(CartItem.UnitPrice))
+                .HasPrecision(18, 2)
+                .IsRequired();
+
+            unitPriceBuilder.OwnsOne(x => x.Currency, currencyBuilder =>
+            {
+                currencyBuilder.Property(x => x.Code)
+                    .HasColumnName("UnitPriceCurrency")
+                    .HasMaxLength(3)
+                    .IsRequired(false);
+            });
+        });
+
+        builder.Navigation(x => x.UnitPrice).IsRequired();
     }
 }

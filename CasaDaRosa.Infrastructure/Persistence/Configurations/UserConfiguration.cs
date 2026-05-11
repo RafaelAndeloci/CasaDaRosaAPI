@@ -12,22 +12,60 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Name)
-            .HasMaxLength(150)
-            .IsRequired();
+        builder.OwnsOne(x => x.Name, nameBuilder =>
+        {
+            nameBuilder.Property(x => x.FirstName)
+                .HasColumnName("FirstName")
+                .HasMaxLength(100)
+                .IsRequired();
 
-        builder.Property(x => x.Email)
-            .HasMaxLength(200)
-            .IsRequired();
+            nameBuilder.Property(x => x.Surname)
+                .HasColumnName("Surname")
+                .HasMaxLength(150)
+                .IsRequired();
+
+            nameBuilder.Property(x => x.FullName)
+                .HasColumnName(nameof(User.Name))
+                .HasMaxLength(200)
+                .IsRequired();
+        });
+
+        builder.OwnsOne(x => x.Email, emailBuilder =>
+        {
+            emailBuilder.Property(x => x.Value)
+                .HasColumnName(nameof(User.Email))
+                .HasMaxLength(200)
+                .IsRequired();
+        });
 
         builder.Property(x => x.PasswordHash)
             .HasMaxLength(500)
             .IsRequired();
 
-        builder.Property(x => x.PhoneNumber)
-            .HasMaxLength(20);
+        builder.OwnsOne(x => x.PhoneNumber, phoneBuilder =>
+        {
+            phoneBuilder.Property(x => x.FormattedValue)
+                .HasColumnName(nameof(User.PhoneNumber))
+                .HasMaxLength(20)
+                .IsRequired(false);
 
-        builder.HasIndex(x => x.Email)
+            phoneBuilder.Property(x => x.RawValue)
+                .HasColumnName("PhoneNumberRawValue")
+                .IsRequired(false);
+
+            phoneBuilder.Property(x => x.AreaCode)
+                .HasColumnName("PhoneNumberAreaCode")
+                .IsRequired(false);
+
+            phoneBuilder.Property(x => x.CountryCode)
+                .HasColumnName("PhoneNumberCountryCode")
+                .IsRequired(false);
+        });
+
+        builder.Navigation(x => x.Name).IsRequired();
+        builder.Navigation(x => x.Email).IsRequired();
+
+        builder.HasIndex("Email")
             .IsUnique();
 
         builder.HasMany(x => x.Addresses)

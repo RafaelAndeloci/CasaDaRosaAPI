@@ -1,4 +1,4 @@
-using CasaDaRosa.Domain.Entities.Cart;
+using CasaDaRosa.Domain.Entities.Carts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
