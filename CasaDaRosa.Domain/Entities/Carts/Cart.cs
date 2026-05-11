@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using CasaDaRosa.Domain.Abstractions;
 
 namespace CasaDaRosa.Domain.Entities.Carts;
@@ -10,12 +11,23 @@ public class Cart : AuditableEntity, IAggregateRoot
     private readonly List<CartItem> _items = [];
     public IReadOnlyCollection<CartItem> Items => _items.AsReadOnly();
 
-    private Cart()
-    {
-    }
-
-    public Cart(Guid userId)
+    private Cart(
+        Guid id,
+        Guid userId,
+        CartStatus status,
+        List<CartItem> items) : base(id)
     {
         UserId = userId;
+        Status = status;
+        _items = items;
+    }
+
+    public static Cart Create(Guid userId, CartStatus status, List<CartItem> items)
+    {
+        return new(
+            id: Guid.NewGuid(),
+            userId: userId,
+            status: status,
+            items: items);
     }
 }

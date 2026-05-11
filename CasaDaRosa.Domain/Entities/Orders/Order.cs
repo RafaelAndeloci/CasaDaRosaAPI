@@ -1,6 +1,7 @@
 using CasaDaRosa.Domain.Abstractions;
 using CasaDaRosa.Domain.Entities.Orders.Events;
 using CasaDaRosa.Domain.Exceptions;
+using CasaDaRosa.Domain.ValueObjects;
 
 namespace CasaDaRosa.Domain.Entities.Orders;
 
@@ -11,68 +12,84 @@ public class Order : AuditableEntity, IAggregateRoot
     public PaymentMethod PaymentMethod { get; private set; }
     public OrderStatus Status { get; private set; } = OrderStatus.Pending;
     public DateTime DeliveryAvailableFromUtc { get; private set; }
-    public decimal TotalAmount { get; private set; }
+    public Money TotalAmount { get; private set; }
 
     private readonly List<OrderItem> _items = [];
     public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
 
-    private Order()
+    private Order(
+        Guid id,
+        Guid userId,
+        Guid addressId,
+        PaymentMethod paymentMethod,
+        OrderStatus status,
+        DateTime deliveryAvailableFromUtc,
+        Money totalAmount,
+        List<OrderItem> items) : base(id)
     {
-    }
-
-    public Order(Guid userId, Guid addressId, PaymentMethod paymentMethod, DateTime deliveryAvailableFromUtc, decimal totalAmount)
-    {
-        if (userId == Guid.Empty)
-        {
-            throw new DomainValidationException("order.user.invalid", "Order user is required.");
-        }
-
-        if (addressId == Guid.Empty)
-        {
-            throw new DomainValidationException("order.address.invalid", "Order address is required.");
-        }
-
-        if (deliveryAvailableFromUtc <= DateTime.UtcNow)
-        {
-            throw new DomainValidationException("order.delivery_window.invalid", "Delivery availability must be in the future.");
-        }
-
-        if (totalAmount <= 0)
-        {
-            throw new DomainValidationException("order.total.invalid", "Order total amount must be greater than zero.");
-        }
 
         UserId = userId;
         AddressId = addressId;
         PaymentMethod = paymentMethod;
+        Status = status;
         DeliveryAvailableFromUtc = deliveryAvailableFromUtc;
-        TotalAmount = decimal.Round(totalAmount, 2, MidpointRounding.ToEven);
-
-        RaiseDomainEvent(new OrderPlacedDomainEvent(Id, UserId, TotalAmount, DeliveryAvailableFromUtc));
+        TotalAmount = totalAmount;
+        _items = items;
     }
 
-    public void AddItem(Guid productId, string productNameSnapshot, int quantity, decimal unitPrice)
+    public static Order Create(
+        Guid userId, 
+        Guid addressId, 
+        PaymentMethod paymentMethod, 
+        DateTime deliveryAvailableFromUtc)
     {
-        var item = new OrderItem(Id, productId, productNameSnapshot, quantity, unitPrice);
+        return new(
+            id: Guid.NewGuid(),
+            userId: userId,
+            addressId: addressId,
+            paymentMethod: paymentMethod,
+            status: OrderStatus.Pending,
+            deliveryAvailableFromUtc: deliveryAvailableFromUtc,
+            totalAmount: Money.Zero(),
+            items: []);
+    }
+
+    public Result AddItem(OrderItem item)
+    {
         _items.Add(item);
         RecalculateTotal();
-        SetUpdatedAtUtc();
+        Touch();
+
+        return Result.Success();
     }
 
-    public void Confirm()
+    public Result Confirm()
     {
+        if(Status != OrderStatus.Pending)
+        {
+            return Result.Failure(OrderErrors.NotPending);
+        }
         Status = OrderStatus.Confirmed;
-        SetUpdatedAtUtc();
+        RaiseDomainEvent(new OrderPlacedDomainEvent(Id));
+        Touch();
+        return Result.Success();
     }
 
-    public void Cancel()
+    public Result Cancel()
     {
+        if (Status != OrderStatus.Confirmed)
+        {
+            return Result.Failure(OrderErrors.NotConfirmed);
+        }
         Status = OrderStatus.Cancelled;
-        SetUpdatedAtUtc();
+        RaiseDomainEvent(new OrderCancelledDomainEvent(Id));
+        Touch();
+        return Result.Success();
     }
 
     private void RecalculateTotal()
     {
-        TotalAmount = decimal.Round(_items.Sum(item => item.Total), 2, MidpointRounding.ToEven);
+        var total = _items.Aggregate(Money.Zero(), (acc, item) => acc + item.Total);
+        TotalAmount = total;
     }
 }

@@ -4,36 +4,42 @@ namespace CasaDaRosa.Domain.Entities.Categories;
 
 public class Category : AuditableEntity, IAggregateRoot
 {
-    public CategoryName Name { get; private set; } = null!;
+    public CategoryName Name { get; private set; }
     public CategoryDescription? Description { get; private set; }
-    public bool IsActive { get; private set; } = true;
+    public bool IsActive { get; private set; }
 
-    private Category()
-    {
-    }
-
-    public Category(string name, string? description)
-    {
-        UpdateDetails(CategoryName.Create(name), string.IsNullOrWhiteSpace(description) ? null : CategoryDescription.Create(description));
-    }
-
-    public void UpdateDetails(CategoryName name, CategoryDescription? description)
+    private Category(
+        Guid id,
+        CategoryName name, 
+        CategoryDescription? description, 
+        bool isActive) : base(id)
     {
         Name = name;
         Description = description;
-        SetUpdatedAtUtc();
+        IsActive = isActive;
+    }
+
+    public static Category Create(
+        string name,
+        string? description,
+        bool isActive)
+    {
+        return new(
+            id: Guid.NewGuid(),
+            name: CategoryName.Create(name),
+            description: description != null ? CategoryDescription.Create(description) : null,
+            isActive: isActive);
     }
 
     public void Deactivate()
     {
         IsActive = false;
-        SetUpdatedAtUtc();
+        Touch();
     }
 
     public void Activate()
     {
         IsActive = true;
-        SetUpdatedAtUtc();
+        Touch();
     }
-
 }

@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using CasaDaRosa.Domain.Abstractions;
 using CasaDaRosa.Domain.Exceptions;
 using CasaDaRosa.Domain.ValueObjects;
@@ -7,73 +8,66 @@ namespace CasaDaRosa.Domain.Entities.Products;
 public class Product : AuditableEntity, IAggregateRoot
 {
     public Guid CategoryId { get; private set; }
-    public ProductName Name { get; private set; } = null!;
+    public ProductName Name { get; private set; }
     public ProductDescription? Description { get; private set; }
-    public Money Price { get; private set; } = null!;
-    public StockQuantity StockQuantity { get; private set; } = null!;
-    public bool IsActive { get; private set; } = true;
+    public Money Price { get; private set; }
+    public StockQuantity StockQuantity { get; private set; }
+    public bool IsActive { get; private set; }
 
     private readonly List<Review> _reviews = [];
     public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
 
-    private Product() { }
-
-    public Product(Guid categoryId, string name, string? description, Money price, int stockQuantity)
+    private Product(
+        Guid id,
+        Guid categoryId,
+        ProductName name,
+        ProductDescription? description,
+        Money price,
+        StockQuantity stockQuantity,
+        bool isActive,
+        List<Review> reviews
+        ) : base(id)
     {
-        SetCategory(categoryId);
-        UpdateDetails(ProductName.Create(name), string.IsNullOrWhiteSpace(description) ? null : ProductDescription.Create(description), price);
-        UpdateStock(StockQuantity.Create(stockQuantity));
-    }
-
-    public void SetCategory(Guid categoryId)
-    {
-        if (categoryId == Guid.Empty)
-        {
-            throw new DomainValidationException("product.category.invalid", "Product category is required.");
-        }
-
         CategoryId = categoryId;
-        SetUpdatedAtUtc();
-    }
-
-    public void UpdateDetails(ProductName name, ProductDescription? description, Money price)
-    {
         Name = name;
         Description = description;
         Price = price;
-        SetUpdatedAtUtc();
-    }
-
-    public void UpdateStock(StockQuantity stockQuantity)
-    {
         StockQuantity = stockQuantity;
-        SetUpdatedAtUtc();
+        IsActive = isActive;
+        _reviews = reviews;
     }
 
-    public void Deactivate()
+    public static Product Create(Guid categoryId, string name, string? description, Money price, int stockQuantity)
     {
-        IsActive = false;
-        SetUpdatedAtUtc();
+        var product = new Product(
+            categoryId,
+            ProductName.Create(name),
+            string.IsNullOrWhiteSpace(description) ? null : ProductDescription.Create(description),
+            price,
+            StockQuantity.Create(stockQuantity),
+            true
+        );
+        return product;
     }
 
-    public void Activate()
+    public Result UpdateStockQuantity(int newStockQuantity)
     {
-        IsActive = true;
-        SetUpdatedAtUtc();
+        var result = StockQuantity.Create(newStockQuantity);
+        if (!result.IsSuccess) return result;
+
+        StockQuantity = result.Value;
+        Touch();
+        return Result.Success();
     }
 
-    public Review AddReview(Guid userId, decimal ratingValue, string? comment)
+    public Result AddReview(Review review)
     {
-        if (userId == Guid.Empty)
+        if(_reviews.Any(r => r.Id == review.Id))
         {
-            throw new DomainValidationException("product.review.user.invalid", "Review user is required.");
+            return Result.Failure(ProductErrors.DuplicatedReview);
         }
 
-        var review = new Review(Id, userId, Rating.Create(ratingValue), comment);
         _reviews.Add(review);
-        SetUpdatedAtUtc();
-
-        return review;
+        return Result.Success();
     }
-
 }

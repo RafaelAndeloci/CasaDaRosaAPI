@@ -12,14 +12,14 @@ public sealed class StockQuantity : ValueObject
         Value = value;
     }
 
-    public static StockQuantity Create(int value)
+    public static Result<StockQuantity> Create(int value)
     {
         if (value < 0)
         {
-            throw new DomainValidationException("product.stock.invalid", "Product stock cannot be negative.");
+            return Result.Failure<StockQuantity>(ProductErrors.InvalidStockQuantity);
         }
 
-        return new StockQuantity(value);
+        return Result.Success(new StockQuantity(value));
     }
 
     protected override IEnumerable<object?> GetEqualityComponents()

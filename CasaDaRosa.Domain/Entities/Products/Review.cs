@@ -10,26 +10,32 @@ public class Review : AuditableEntity
     public decimal RatingValue { get; private set; }
     public string? Comment { get; private set; }
 
-    private Review()
+    private Review(
+        Guid id, 
+        Guid productId, 
+        Guid userId, 
+        decimal ratingValue, 
+        string? comment) : base(id)
     {
-    }
-
-    public Review(Guid productId, Guid userId, Rating rating, string? comment)
-    {
-        if (productId == Guid.Empty)
-        {
-            throw new DomainValidationException("review.product.invalid", "Review product is required.");
-        }
-
-        if (userId == Guid.Empty)
-        {
-            throw new DomainValidationException("review.user.invalid", "Review user is required.");
-        }
-
         ProductId = productId;
         UserId = userId;
-        RatingValue = rating.Value;
-        Comment = ValidateComment(comment);
+        RatingValue = ratingValue;
+        Comment = comment;
+    }
+
+    public static Review Create(
+        Guid productId, 
+        Guid userId, 
+        decimal ratingValue, 
+        string? comment)
+    {
+        var validatedComment = ValidateComment(comment);
+        return new Review(
+            id: Guid.NewGuid(),
+            productId: productId,
+            userId: userId, 
+            ratingValue: ratingValue, 
+            comment: validatedComment);
     }
 
     private static string? ValidateComment(string? comment)
