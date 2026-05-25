@@ -12,6 +12,10 @@ public class Cart : AuditableEntity, IAggregateRoot
     private readonly List<CartItem> _items = [];
     public IReadOnlyCollection<CartItem> Items => _items.AsReadOnly();
 
+    private Cart() : base(Guid.Empty)
+    {
+    }
+
     private Cart(
         Guid id,
         Guid userId,

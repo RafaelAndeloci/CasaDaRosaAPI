@@ -9,7 +9,11 @@ public class CartItem : AuditableEntity
     public Guid CartId { get; private set; }
     public Guid ProductId { get; private set; }
     public int Quantity { get; private set; }
-    public Money UnitPrice { get; private set; }
+    public Money UnitPrice { get; private set; } = null!;
+
+    private CartItem() : base(Guid.Empty)
+    {
+    }
 
     private CartItem(Guid id, Guid cartId, Guid productId, int quantity, Money unitPrice) : base(id)
     {

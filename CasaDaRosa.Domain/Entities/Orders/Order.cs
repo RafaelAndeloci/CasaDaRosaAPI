@@ -13,10 +13,14 @@ public class Order : AuditableEntity, IAggregateRoot
     public PaymentMethod PaymentMethod { get; private set; }
     public OrderStatus Status { get; private set; } = OrderStatus.Pending;
     public DateTime DeliveryAvailableFromUtc { get; private set; }
-    public Money TotalAmount { get; private set; }
+    public Money TotalAmount { get; private set; } = null!;
 
     private readonly List<OrderItem> _items = [];
     public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
+
+    private Order() : base(Guid.Empty)
+    {
+    }
 
     private Order(
         Guid id,

@@ -10,6 +10,10 @@ public class Review : AuditableEntity
     public decimal RatingValue { get; private set; }
     public string? Comment { get; private set; }
 
+    private Review() : base(Guid.Empty)
+    {
+    }
+
     private Review(
         Guid id, 
         Guid productId, 

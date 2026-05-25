@@ -35,14 +35,20 @@ public record AddressUfAbbreviation
     public static readonly AddressUfAbbreviation TO = new("TO", "Tocantins");
 
 
+    private AddressUfAbbreviation()
+    {
+        Code = string.Empty;
+        FullName = string.Empty;
+    }
+
     private AddressUfAbbreviation(string ufCode, string fullName)
     {
         Code = ufCode;
         FullName = fullName;
     }
 
-    public string Code { get; init; }
-    public string FullName { get; init; }
+    public string Code { get; private set; }
+    public string FullName { get; private set; }
 
     public static AddressUfAbbreviation FromCode(string code)
     {
