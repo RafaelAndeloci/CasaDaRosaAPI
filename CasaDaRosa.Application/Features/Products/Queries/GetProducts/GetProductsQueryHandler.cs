@@ -14,6 +14,7 @@ public sealed class GetProductsQueryHandler(IProductRepository productRepository
         var filteredProducts = products
             .Where(product => request.CategoryId is null || product.CategoryId == request.CategoryId)
             .Where(product => TextFilterUtility.ContainsNormalized(product.Name.ToString(), request.Name))
+            .OrderBy(product => product.Name.ToString())
             .ToArray();
 
         var totalCount = filteredProducts.Length;

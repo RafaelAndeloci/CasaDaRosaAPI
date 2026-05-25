@@ -4,6 +4,7 @@ using CasaDaRosa.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CasaDaRosa.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(CasaDaRosaDbContext))]
-    partial class CasaDaRosaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260525184433_AdjustZipCodeStorage")]
+    partial class AdjustZipCodeStorage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

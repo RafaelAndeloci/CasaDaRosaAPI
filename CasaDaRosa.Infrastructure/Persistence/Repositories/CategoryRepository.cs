@@ -10,7 +10,6 @@ public sealed class CategoryRepository(CasaDaRosaDbContext dbContext) : ICategor
     {
         return await dbContext.Categories
             .AsNoTracking()
-            .OrderBy(category => category.Name)
             .ToArrayAsync(cancellationToken);
     }
 

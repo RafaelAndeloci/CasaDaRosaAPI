@@ -9,12 +9,12 @@ public partial record ZipCode
     /// Gets or sets the value formatted as a string for display or serialization purposes.
     /// Formatted to the pattern '00000-000'.
     /// </summary>
-    public string FormattedValue { get; set; }
+    public string FormattedValue { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the raw short value represented by this property.
     /// </summary>
-    public short RawValue { get; set; }
+    public int RawValue { get; set; }
 
     private ZipCode() { }
 
@@ -31,14 +31,16 @@ public partial record ZipCode
     public static ZipCode Create(string formattedValue)
     {
         if (string.IsNullOrWhiteSpace(formattedValue)) throw new ZipCodeRequiredException();
-        if (!Regex.IsMatch(formattedValue, @"^\d{5}-\d{3}$")) throw new ZipCodeInvalidFormatException();         
-            
-        var rawValue = formattedValue.Replace("-", "");
-        if (!short.TryParse(rawValue, out var parsedRawValue)) throw new ZipCodeOnlyNumbersAndHyphenException();
+        var normalizedValue = formattedValue.Trim();
+
+        if (!ZipCodeFormatRegex().IsMatch(normalizedValue)) throw new ZipCodeInvalidFormatException();
+
+        var rawValue = normalizedValue.Replace("-", "");
+        if (!int.TryParse(rawValue, out var parsedRawValue)) throw new ZipCodeOnlyNumbersAndHyphenException();
 
         return new ZipCode
         {
-            FormattedValue = formattedValue,
+            FormattedValue = normalizedValue,
             RawValue = parsedRawValue
         };
     }
@@ -52,7 +54,7 @@ public partial record ZipCode
     /// '00000-000'.</param>
     /// <returns>A ZipCode instance with the formatted and raw values set according to the specified zip code.</returns>
     /// <exception cref="ArgumentException">Thrown when the provided value does not contain exactly 8 digits.</exception>
-    public static ZipCode Create(short value)
+    public static ZipCode Create(int value)
     {
         if (value.ToString().Length != 8) throw new ZipCodeInvalidFormatException();
         var formattedValue = $"{value.ToString().Substring(0, 5)}-{value.ToString().Substring(5, 3)}";
@@ -68,7 +70,7 @@ public partial record ZipCode
         return Create(value);
     }
 
-    public static implicit operator ZipCode(short value)
+    public static implicit operator ZipCode(int value)
     {
         return Create(value);
     }
@@ -79,7 +81,7 @@ public partial record ZipCode
     /// <param name="value">The zip code value to format. Must contain exactly 8 digits when converted to a string.</param>
     /// <returns>A string representing the formatted zip code in the '00000-000' format.</returns>
     /// <exception cref="ArgumentException">Thrown if the string representation of value does not contain exactly 8 digits.</exception>
-    public static string Format(short value)
+    public static string Format(int value)
     {
         if (value.ToString().Length != 8) throw new ZipCodeEightDigitsRequiredException();
         return $"{value.ToString().Substring(0, 5)}-{value.ToString().Substring(5, 3)}";

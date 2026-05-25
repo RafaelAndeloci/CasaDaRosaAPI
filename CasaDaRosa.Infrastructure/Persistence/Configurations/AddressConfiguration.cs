@@ -55,6 +55,7 @@ public sealed class AddressConfiguration : IEntityTypeConfiguration<Address>
 
             zipCodeBuilder.Property(x => x.RawValue)
                 .HasColumnName("ZipCodeRawValue")
+                .HasColumnType("int")
                 .IsRequired();
         });
 
