@@ -3,6 +3,7 @@ using CasaDaRosa.Application.DependencyInjection;
 using CasaDaRosa.Infrastructure.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using FluentValidation;
 
 namespace CasaDaRosa.API.Extensions;
 
@@ -13,6 +14,7 @@ public static class ServiceCollectionExtensions
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddApplication();
+        services.AddValidatorsFromAssembly(Assembly.Load("CasaDaRosa.Application"));
         services.AddInfrastructure(configuration);
         services.AddSwaggerDocumentation();
 

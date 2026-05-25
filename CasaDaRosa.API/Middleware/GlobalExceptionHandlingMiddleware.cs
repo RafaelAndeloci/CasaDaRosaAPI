@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using CasaDaRosa.API.Contracts.Responses;
+using CasaDaRosa.Application.Exceptions;
 using CasaDaRosa.Domain.Exceptions;
 using FluentValidation;
 
@@ -26,6 +27,16 @@ public sealed class GlobalExceptionHandlingMiddleware(RequestDelegate next, ILog
         var traceId = context.TraceIdentifier;
         var response = exception switch
         {
+            ApplicationExceptionBase applicationException when applicationException is UnauthorizedApplicationException
+                => CreateUnauthorizedError(applicationException, traceId),
+            ApplicationExceptionBase applicationException when applicationException is ForbiddenApplicationException
+                => CreateForbiddenError(applicationException, traceId),
+            ApplicationExceptionBase applicationException when applicationException is NotFoundApplicationException
+                => CreateNotFoundError(applicationException, traceId),
+            ApplicationExceptionBase applicationException when applicationException is ConflictApplicationException
+                => CreateConflictError(applicationException, traceId),
+            ApplicationExceptionBase applicationException when applicationException is UnprocessableApplicationException
+                => CreateUnprocessableError(applicationException, traceId),
             DomainValidationException domainValidationException => CreateDomainValidationError(domainValidationException, traceId),
             DomainException domainException => CreateDomainError(domainException, traceId),
             ValidationException validationException => CreateFluentValidationError(validationException, traceId),
@@ -65,6 +76,41 @@ public sealed class GlobalExceptionHandlingMiddleware(RequestDelegate next, ILog
         return (
             HttpStatusCode.BadRequest,
             new ApiErrorResponse(false, "validation_error", "One or more validation errors occurred.", errors, traceId));
+    }
+
+    private static (HttpStatusCode StatusCode, ApiErrorResponse Body) CreateUnauthorizedError(ApplicationExceptionBase exception, string traceId)
+    {
+        return (
+            HttpStatusCode.Unauthorized,
+            new ApiErrorResponse(false, exception.Code, exception.Message, [], traceId));
+    }
+
+    private static (HttpStatusCode StatusCode, ApiErrorResponse Body) CreateNotFoundError(ApplicationExceptionBase exception, string traceId)
+    {
+        return (
+            HttpStatusCode.NotFound,
+            new ApiErrorResponse(false, exception.Code, exception.Message, [], traceId));
+    }
+
+    private static (HttpStatusCode StatusCode, ApiErrorResponse Body) CreateForbiddenError(ApplicationExceptionBase exception, string traceId)
+    {
+        return (
+            HttpStatusCode.Forbidden,
+            new ApiErrorResponse(false, exception.Code, exception.Message, [], traceId));
+    }
+
+    private static (HttpStatusCode StatusCode, ApiErrorResponse Body) CreateConflictError(ApplicationExceptionBase exception, string traceId)
+    {
+        return (
+            HttpStatusCode.Conflict,
+            new ApiErrorResponse(false, exception.Code, exception.Message, [], traceId));
+    }
+
+    private static (HttpStatusCode StatusCode, ApiErrorResponse Body) CreateUnprocessableError(ApplicationExceptionBase exception, string traceId)
+    {
+        return (
+            HttpStatusCode.UnprocessableEntity,
+            new ApiErrorResponse(false, exception.Code, exception.Message, [], traceId));
     }
 
     private static (HttpStatusCode StatusCode, ApiErrorResponse Body) CreateUnexpectedError(string traceId)
