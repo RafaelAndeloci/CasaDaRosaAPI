@@ -1,4 +1,5 @@
 using CasaDaRosa.Domain.Entities.Orders;
+using CasaDaRosa.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -19,13 +20,12 @@ public sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
                 .HasPrecision(18, 2)
                 .IsRequired();
 
-            totalBuilder.OwnsOne(x => x.Currency, currencyBuilder =>
-            {
-                currencyBuilder.Property(x => x.Code)
-                    .HasColumnName("TotalAmountCurrency")
-                    .HasMaxLength(3)
-                    .IsRequired(false);
-            });
+            totalBuilder.Property(x => x.Currency)
+                .HasColumnName("TotalAmountCurrency")
+                .HasMaxLength(3)
+                .HasConversion(
+                    currency => currency == null ? string.Empty : currency.Code,
+                    code => Currency.FromCodeOrNone(code));
         });
 
         builder.HasMany(x => x.Items)

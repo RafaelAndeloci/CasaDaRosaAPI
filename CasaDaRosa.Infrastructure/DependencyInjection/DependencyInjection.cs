@@ -1,9 +1,17 @@
 using System.Text;
 using CasaDaRosa.Application.Abstractions;
+using CasaDaRosa.Application.Abstractions.Contexts;
+using CasaDaRosa.Application.Abstractions.Persistence;
 using CasaDaRosa.Infrastructure.Authentication;
+using CasaDaRosa.Infrastructure.Contexts;
+using CasaDaRosa.Domain.Entities.Carts.Services;
 using CasaDaRosa.Infrastructure.Notifications;
 using CasaDaRosa.Infrastructure.Persistence;
+using CasaDaRosa.Infrastructure.Persistence.Repositories;
+using CasaDaRosa.Infrastructure.Security;
+using CasaDaRosa.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -40,8 +48,20 @@ public static class DependencyInjection
             });
 
         services.AddAuthorization();
+        services.AddHttpContextAccessor();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddScoped<ISecurityService, PasswordHasherSecurityService>();
+        services.AddScoped<IAuthEmailService, NoOpAuthEmailService>();
         services.AddScoped<IEmailService, NoOpEmailService>();
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IAddressRepository, AddressRepository>();
+        services.AddScoped<ICartRepository, CartRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IUserContext, UserContext>();
+        services.AddScoped<ICartProductEligibilityService, CartProductEligibilityService>();
 
         return services;
     }

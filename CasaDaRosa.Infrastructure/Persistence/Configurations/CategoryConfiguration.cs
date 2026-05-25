@@ -19,6 +19,9 @@ public sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
                 .HasColumnName(nameof(Category.Name))
                 .HasMaxLength(120)
                 .IsRequired();
+
+            nameBuilder.HasIndex(x => x.Value)
+                .IsUnique();
         });
 
         builder.OwnsOne(x => x.Description, descriptionBuilder =>
@@ -30,8 +33,5 @@ public sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
         });
 
         builder.Navigation(x => x.Name).IsRequired();
-
-        builder.HasIndex("Name")
-            .IsUnique();
     }
 }
