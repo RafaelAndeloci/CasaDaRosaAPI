@@ -1,9 +1,13 @@
 using CasaDaRosa.Application.Features.Auth.Commands.Login;
 using CasaDaRosa.Application.Features.Auth.Commands.ConfirmEmail;
+using CasaDaRosa.Application.Features.Auth.Commands.CreateAdmin;
+using CasaDaRosa.Application.Features.Auth.Commands.PromoteUserToAdmin;
 using CasaDaRosa.Application.Features.Auth.Commands.Register;
 using CasaDaRosa.Application.Features.Auth.Commands.ResendConfirmation;
+using CasaDaRosa.Application.Common.Security;
 using CasaDaRosa.API.Contracts.Responses;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CasaDaRosa.API.Controllers;
@@ -27,12 +31,7 @@ public sealed class AuthController(ISender sender) : BaseController(sender)
     public async Task<IActionResult> Register([FromBody] RegisterCommand command, CancellationToken cancellationToken)
     {
         var response = await Sender.Send(command, cancellationToken);
-
-        return Created(string.Empty, new ApiResponse<RegisterResponse>(
-            true,
-            "User registered successfully.",
-            response,
-            HttpContext.TraceIdentifier));
+        return CreatedResponse(response, "User registered successfully.");
     }
 
     /// <summary>
@@ -85,5 +84,45 @@ public sealed class AuthController(ISender sender) : BaseController(sender)
     {
         var response = await Sender.Send(command, cancellationToken);
         return OkResponse(response, "Login processed successfully.");
+    }
+
+    /// <summary>
+    /// Creates a new administrator account. Only authenticated administrators can perform this action.
+    /// </summary>
+    /// <param name="command">Administrator creation payload.</param>
+    /// <param name="cancellationToken">Cancellation token for the request.</param>
+    /// <returns>The created administrator identifier.</returns>
+    [Authorize(Policy = AuthorizationPolicies.AdminOnly)]
+    [HttpPost("admins")]
+    [ProducesResponseType(typeof(ApiResponse<CreateAdminResponse>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> CreateAdmin([FromBody] CreateAdminCommand command, CancellationToken cancellationToken)
+    {
+        var response = await Sender.Send(command, cancellationToken);
+        return CreatedResponse(response, "Administrator created successfully.");
+    }
+
+    /// <summary>
+    /// Promotes an existing user to administrator. Only authenticated administrators can perform this action.
+    /// </summary>
+    /// <param name="userId">The user identifier.</param>
+    /// <param name="cancellationToken">Cancellation token for the request.</param>
+    [Authorize(Policy = AuthorizationPolicies.AdminOnly)]
+    [HttpPatch("users/{userId:guid}/promote-to-admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> PromoteUserToAdmin(Guid userId, CancellationToken cancellationToken)
+    {
+        await Sender.Send(new PromoteUserToAdminCommand(userId), cancellationToken);
+        return NoContent();
     }
 }

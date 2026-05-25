@@ -6,6 +6,11 @@ namespace CasaDaRosa.Infrastructure.Persistence.Repositories;
 
 public sealed class ProductRepository(CasaDaRosaDbContext dbContext) : IProductRepository
 {
+    public Task AddAsync(Product product, CancellationToken cancellationToken = default)
+    {
+        return dbContext.Products.AddAsync(product, cancellationToken).AsTask();
+    }
+
     public async Task<IReadOnlyCollection<Product>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await dbContext.Products
@@ -17,6 +22,12 @@ public sealed class ProductRepository(CasaDaRosaDbContext dbContext) : IProductR
     {
         return dbContext.Products
             .AsNoTracking()
+            .FirstOrDefaultAsync(product => product.Id == id, cancellationToken);
+    }
+
+    public Task<Product?> GetTrackedByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return dbContext.Products
             .FirstOrDefaultAsync(product => product.Id == id, cancellationToken);
     }
 }

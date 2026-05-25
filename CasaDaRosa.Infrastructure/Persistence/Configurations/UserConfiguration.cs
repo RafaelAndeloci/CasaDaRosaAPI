@@ -45,6 +45,9 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(500)
             .IsRequired();
 
+        builder.Property(x => x.Role)
+            .IsRequired();
+
         builder.Property(x => x.EmailConfirmationToken)
             .HasMaxLength(100)
             .IsRequired();
