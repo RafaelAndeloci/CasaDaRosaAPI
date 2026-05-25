@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="MediatR" Version="14.1.0" />
   </ItemGroup>
 
@@ -16,12 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Behaviors\" />
-    <Folder Include="Features\Categories\" />
-    <Folder Include="Features\Addresses\" />
     <Folder Include="Features\Reviews\" />
-    <Folder Include="Features\Users\" />
-    <Folder Include="Features\Carts\" />
   </ItemGroup>
 
 </Project>

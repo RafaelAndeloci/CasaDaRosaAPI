@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using CasaDaRosa.Application.Abstractions;
+using CasaDaRosa.Application.Abstractions.Auth;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -11,7 +12,7 @@ public sealed class JwtTokenGenerator(IOptions<JwtOptions> options) : IJwtTokenG
 {
     private readonly JwtOptions _options = options.Value;
 
-    public string GenerateToken(Guid userId, string email, IEnumerable<string> roles)
+    public AuthTokenResult GenerateToken(Guid userId, string email, IEnumerable<string> roles)
     {
         var claims = new List<Claim>
         {
@@ -31,9 +32,11 @@ public sealed class JwtTokenGenerator(IOptions<JwtOptions> options) : IJwtTokenG
             issuer: _options.Issuer,
             audience: _options.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(_options.ExpirationInMinutes),
+            expires: SystemClock.UtcNow.AddMinutes(_options.ExpirationInMinutes),
             signingCredentials: signingCredentials);
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return new AuthTokenResult(
+            new JwtSecurityTokenHandler().WriteToken(token),
+            token.ValidTo);
     }
 }

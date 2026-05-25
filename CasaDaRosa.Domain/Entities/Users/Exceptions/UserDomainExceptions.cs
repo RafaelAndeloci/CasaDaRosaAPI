@@ -28,3 +28,15 @@ public sealed class UserNameRequiredException()
 
 public sealed class UserNameInvalidException()
     : DomainValidationException("user.name.invalid", "User full name must contain at least a first name and a surname.");
+
+public sealed class UserEmailConfirmationTokenRequiredException()
+    : DomainValidationException("user.email_confirmation.token_required", "Email confirmation token is required.");
+
+public sealed class UserEmailConfirmationTokenInvalidException()
+    : DomainValidationException("user.email_confirmation.invalid_token", "Invalid email confirmation token.");
+
+public sealed class UserEmailConfirmationTokenExpiredException()
+    : DomainValidationException("user.email_confirmation.expired_token", "Email confirmation token has expired.");
+
+public sealed class UserEmailAlreadyConfirmedException()
+    : DomainValidationException("user.email_confirmation.already_confirmed", "User email is already confirmed.");

@@ -8,14 +8,18 @@ namespace CasaDaRosa.Domain.Entities.Products;
 public class Product : AuditableEntity, IAggregateRoot
 {
     public Guid CategoryId { get; private set; }
-    public ProductName Name { get; private set; }
+    public ProductName Name { get; private set; } = null!;
     public ProductDescription? Description { get; private set; }
-    public Money Price { get; private set; }
-    public StockQuantity StockQuantity { get; private set; }
+    public Money Price { get; private set; } = null!;
+    public StockQuantity StockQuantity { get; private set; } = null!;
     public bool IsActive { get; private set; }
 
     private readonly List<Review> _reviews = [];
     public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
+
+    private Product() : base(Guid.Empty)
+    {
+    }
 
     private Product(
         Guid id,

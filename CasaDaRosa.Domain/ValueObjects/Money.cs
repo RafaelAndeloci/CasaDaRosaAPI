@@ -3,8 +3,22 @@ using CasaDaRosa.Domain.ValueObjects.Exceptions;
 
 namespace CasaDaRosa.Domain.ValueObjects;
 
-public sealed record Money(decimal Amount, Currency? Currency)
+public sealed record Money
 {
+    public decimal Amount { get; private set; }
+    public Currency? Currency { get; private set; }
+
+    private Money()
+    {
+        Currency = ValueObjects.Currency.None;
+    }
+
+    public Money(decimal amount, Currency? currency)
+    {
+        Amount = amount;
+        Currency = currency;
+    }
+
     public static Money operator +(Money first, Money second)
     {
         if (first.Currency != second.Currency)

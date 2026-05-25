@@ -8,10 +8,14 @@ public class OrderItem : AuditableEntity
 {
     public Guid OrderId { get; private set; }
     public Guid ProductId { get; private set; }
-    public string ProductNameSnapshot { get; private set; }
+    public string ProductNameSnapshot { get; private set; } = string.Empty;
     public int Quantity { get; private set; }
-    public Money UnitPrice { get; private set; }
-    public Money Total { get; private set; }
+    public Money UnitPrice { get; private set; } = null!;
+    public Money Total { get; private set; } = null!;
+
+    private OrderItem() : base(Guid.Empty)
+    {
+    }
 
     private OrderItem(
         Guid id,

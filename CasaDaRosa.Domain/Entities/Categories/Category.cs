@@ -4,9 +4,13 @@ namespace CasaDaRosa.Domain.Entities.Categories;
 
 public class Category : AuditableEntity, IAggregateRoot
 {
-    public CategoryName Name { get; private set; }
+    public CategoryName Name { get; private set; } = null!;
     public CategoryDescription? Description { get; private set; }
     public bool IsActive { get; private set; }
+
+    private Category() : base(Guid.Empty)
+    {
+    }
 
     private Category(
         Guid id,
