@@ -7,12 +7,21 @@ using Microsoft.AspNetCore.Mvc;
 namespace CasaDaRosa.API.Controllers;
 
 [Authorize]
+/// <summary>
+/// Exposes authenticated user profile endpoints.
+/// </summary>
 public sealed class UsersController(ISender sender) : BaseController(sender)
 {
+    /// <summary>
+    /// Retrieves the profile of the authenticated user.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token for the request.</param>
+    /// <returns>The current user profile.</returns>
     [HttpGet("me")]
     [ProducesResponseType(typeof(ApiResponse<UserProfileResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetMe(CancellationToken cancellationToken)
     {
         var response = await Sender.Send(new GetMeQuery(), cancellationToken);

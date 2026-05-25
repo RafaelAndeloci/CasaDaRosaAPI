@@ -4,6 +4,7 @@ using CasaDaRosa.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CasaDaRosa.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(CasaDaRosaDbContext))]
-    partial class CasaDaRosaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260525174847_AdjustPhoneNumberStorage")]
+    partial class AdjustPhoneNumberStorage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -389,8 +392,8 @@ namespace CasaDaRosa.Infrastructure.Persistence.Migrations
                                 .HasColumnType("nvarchar(10)")
                                 .HasColumnName("ZipCode");
 
-                            b1.Property<int>("RawValue")
-                                .HasColumnType("int")
+                            b1.Property<short>("RawValue")
+                                .HasColumnType("smallint")
                                 .HasColumnName("ZipCodeRawValue");
 
                             b1.HasKey("AddressId");

@@ -10,7 +10,6 @@ public sealed class ProductRepository(CasaDaRosaDbContext dbContext) : IProductR
     {
         return await dbContext.Products
             .AsNoTracking()
-            .OrderBy(product => product.Name)
             .ToArrayAsync(cancellationToken);
     }
 

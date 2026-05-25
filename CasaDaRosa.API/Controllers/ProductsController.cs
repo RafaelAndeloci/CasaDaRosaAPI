@@ -7,10 +7,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CasaDaRosa.API.Controllers;
 
+/// <summary>
+/// Exposes catalog product queries.
+/// </summary>
 public sealed class ProductsController(ISender sender) : BaseController(sender)
 {
+    /// <summary>
+    /// Retrieves the catalog products with pagination and optional filters.
+    /// </summary>
+    /// <param name="query">Pagination and filtering parameters for the product listing.</param>
+    /// <param name="cancellationToken">Cancellation token for the request.</param>
+    /// <returns>A paginated list of products.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponse<PagedResult<ProductListItemResponse>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Get([FromQuery] GetProductsQuery query, CancellationToken cancellationToken)
     {
@@ -18,8 +28,15 @@ public sealed class ProductsController(ISender sender) : BaseController(sender)
         return OkResponse(response, "Products retrieved successfully.");
     }
 
+    /// <summary>
+    /// Retrieves the details of a specific product.
+    /// </summary>
+    /// <param name="id">The product identifier.</param>
+    /// <param name="cancellationToken">Cancellation token for the request.</param>
+    /// <returns>The product details when found.</returns>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(ApiResponse<ProductDetailsResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
