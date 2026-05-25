@@ -35,6 +35,13 @@ public class Category : AuditableEntity, IAggregateRoot
             isActive: isActive);
     }
 
+    public void UpdateDetails(string name, string? description)
+    {
+        Name = CategoryName.Create(name);
+        Description = description != null ? CategoryDescription.Create(description) : null;
+        Touch();
+    }
+
     public void Deactivate()
     {
         IsActive = false;

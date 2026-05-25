@@ -11,4 +11,8 @@ public static class OrderErrors
     public static Error NotConfirmed = new(
         "Order.NotConfirmed",
         "The order is not confirmed and cannot be cancelled.");
+
+    public static Error InvalidStatusTransition = new(
+        "Order.InvalidStatusTransition",
+        "The requested order status transition is not allowed.");
 }

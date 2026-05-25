@@ -7,4 +7,5 @@ public sealed record UserProfileResponse(
     string FullName,
     string Email,
     string? PhoneNumber,
+    EnumValueResponse Role,
     EnumValueResponse Status);

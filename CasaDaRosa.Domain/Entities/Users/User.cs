@@ -12,6 +12,7 @@ public class User : AuditableEntity, IAggregateRoot
     public Email Email { get; private set; } = null!;
     public string PasswordHash { get; private set; } = string.Empty;
     public PhoneNumber? PhoneNumber { get; private set; }
+    public UserRole Role { get; private set; } = UserRole.Customer;
     public UserStatus Status { get; private set; } = UserStatus.PendingConfirmation;
     public string EmailConfirmationToken { get; private set; } = string.Empty;
     public DateTime EmailConfirmationTokenExpiresAtUtc { get; private set; }
@@ -30,6 +31,7 @@ public class User : AuditableEntity, IAggregateRoot
         Email email, 
         string passwordHash, 
         PhoneNumber? phoneNumber, 
+        UserRole role,
         UserStatus status,
         string emailConfirmationToken,
         DateTime emailConfirmationTokenExpiresAtUtc,
@@ -39,6 +41,7 @@ public class User : AuditableEntity, IAggregateRoot
         Email = email;
         PasswordHash = passwordHash;
         PhoneNumber = phoneNumber;
+        Role = role;
         Status = status;
         EmailConfirmationToken = emailConfirmationToken;
         EmailConfirmationTokenExpiresAtUtc = emailConfirmationTokenExpiresAtUtc;
@@ -64,6 +67,7 @@ public class User : AuditableEntity, IAggregateRoot
             email: userEmail,
             passwordHash: password,
             phoneNumber: phone,
+            role: UserRole.Customer,
             status: UserStatus.PendingConfirmation,
             emailConfirmationToken: token,
             emailConfirmationTokenExpiresAtUtc: expiresAtUtc,
@@ -71,9 +75,83 @@ public class User : AuditableEntity, IAggregateRoot
         );
     }
 
+    public static User CreateAdmin(string fullName, string email, string passwordHash, string? phoneNumber = null)
+    {
+        if (string.IsNullOrWhiteSpace(passwordHash))
+        {
+            throw new UserPasswordRequiredException();
+        }
+
+        var userName = UserName.Create(fullName);
+        var userEmail = Users.Email.Create(email);
+        var phone = string.IsNullOrWhiteSpace(phoneNumber) ? null : Users.PhoneNumber.Create(phoneNumber);
+
+        return new(
+            id: Guid.NewGuid(),
+            name: userName,
+            email: userEmail,
+            passwordHash: passwordHash,
+            phoneNumber: phone,
+            role: UserRole.Admin,
+            status: UserStatus.Active,
+            emailConfirmationToken: string.Empty,
+            emailConfirmationTokenExpiresAtUtc: DateTime.MinValue,
+            emailConfirmedAtUtc: DateTime.UtcNow);
+    }
+
     public bool CanAuthenticate()
     {
         return Status == UserStatus.Active;
+    }
+
+    public bool IsAdmin()
+    {
+        return Role == UserRole.Admin;
+    }
+
+    public void PromoteToAdmin()
+    {
+        if (Role == UserRole.Admin)
+        {
+            throw new UserRoleInvalidTransitionException();
+        }
+
+        Role = UserRole.Admin;
+        Touch();
+    }
+
+    public void Activate()
+    {
+        if (Status == UserStatus.Active)
+        {
+            throw new UserStatusInvalidTransitionException();
+        }
+
+        Status = UserStatus.Active;
+
+        if (EmailConfirmedAtUtc is null)
+        {
+            EmailConfirmedAtUtc = DateTime.UtcNow;
+        }
+
+        if (!string.IsNullOrWhiteSpace(EmailConfirmationToken))
+        {
+            EmailConfirmationToken = string.Empty;
+            EmailConfirmationTokenExpiresAtUtc = DateTime.MinValue;
+        }
+
+        Touch();
+    }
+
+    public void Deactivate()
+    {
+        if (Status == UserStatus.Inactive)
+        {
+            throw new UserStatusInvalidTransitionException();
+        }
+
+        Status = UserStatus.Inactive;
+        Touch();
     }
 
     public void ConfirmEmail(string token)

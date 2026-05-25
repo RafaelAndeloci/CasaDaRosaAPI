@@ -2,6 +2,7 @@ using CasaDaRosa.Application.Abstractions;
 using CasaDaRosa.Application.Abstractions.Persistence;
 using CasaDaRosa.Application.Exceptions;
 using CasaDaRosa.Application.Features.Auth.Common;
+using CasaDaRosa.Domain.Entities.Users;
 using MediatR;
 
 namespace CasaDaRosa.Application.Features.Auth.Commands.Login;
@@ -25,7 +26,11 @@ public sealed class LoginCommandHandler(
             throw new ForbiddenApplicationException("auth.email_not_confirmed", "Your email must be confirmed before login.");
         }
 
-        var token = jwtTokenGenerator.GenerateToken(user.Id, user.Email.ToString(), [AuthUserRole.Customer]);
+        var role = user.Role == UserRole.Admin
+            ? AuthUserRole.Admin
+            : AuthUserRole.Customer;
+
+        var token = jwtTokenGenerator.GenerateToken(user.Id, user.Email.ToString(), [role]);
 
         return new LoginResponse(AuthResponseFactory.Create(user, token.AccessToken, token.ExpiresAtUtc));
     }

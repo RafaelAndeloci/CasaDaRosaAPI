@@ -69,6 +69,32 @@ public class Product : AuditableEntity, IAggregateRoot
         return product;
     }
 
+    public void UpdateDetails(Guid categoryId, string name, string? description, Money price)
+    {
+        if (categoryId == Guid.Empty)
+        {
+            throw new ProductCategoryRequiredException();
+        }
+
+        CategoryId = categoryId;
+        Name = ProductName.Create(name);
+        Description = string.IsNullOrWhiteSpace(description) ? null : ProductDescription.Create(description);
+        Price = price;
+        Touch();
+    }
+
+    public void Activate()
+    {
+        IsActive = true;
+        Touch();
+    }
+
+    public void Deactivate()
+    {
+        IsActive = false;
+        Touch();
+    }
+
     public Result UpdateStockQuantity(int newStockQuantity)
     {
         var result = StockQuantity.Create(newStockQuantity);

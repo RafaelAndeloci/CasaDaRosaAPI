@@ -14,4 +14,9 @@ public abstract class BaseController(ISender sender) : ControllerBase
     {
         return Ok(new ApiResponse<T>(true, message, data, HttpContext.TraceIdentifier));
     }
+
+    protected IActionResult CreatedResponse<T>(T data, string message = "Resource created successfully.")
+    {
+        return Created(string.Empty, new ApiResponse<T>(true, message, data, HttpContext.TraceIdentifier));
+    }
 }

@@ -27,6 +27,7 @@ public sealed class GetMeQueryHandler(IUserContext userContext, IUserRepository 
             user.Name.ToString(),
             user.Email.ToString(),
             user.PhoneNumber?.ToString(),
+            EnumValueResponse.FromEnum(user.Role),
             EnumValueResponse.FromEnum(user.Status));
     }
 }

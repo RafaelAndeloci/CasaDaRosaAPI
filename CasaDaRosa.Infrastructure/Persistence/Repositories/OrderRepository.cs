@@ -6,6 +6,15 @@ namespace CasaDaRosa.Infrastructure.Persistence.Repositories;
 
 public sealed class OrderRepository(CasaDaRosaDbContext dbContext) : IOrderRepository
 {
+    public async Task<IReadOnlyCollection<Order>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Orders
+            .AsNoTracking()
+            .Include(order => order.Items)
+            .OrderByDescending(order => order.CreatedAtUtc)
+            .ToArrayAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyCollection<Order>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         return await dbContext.Orders
@@ -20,6 +29,13 @@ public sealed class OrderRepository(CasaDaRosaDbContext dbContext) : IOrderRepos
     {
         return dbContext.Orders
             .AsNoTracking()
+            .Include(order => order.Items)
+            .FirstOrDefaultAsync(order => order.Id == id, cancellationToken);
+    }
+
+    public Task<Order?> GetTrackedByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return dbContext.Orders
             .Include(order => order.Items)
             .FirstOrDefaultAsync(order => order.Id == id, cancellationToken);
     }

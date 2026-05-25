@@ -112,6 +112,52 @@ public class Order : AuditableEntity, IAggregateRoot
         return Result.Success();
     }
 
+    public Result UpdateStatus(OrderStatus newStatus)
+    {
+        if (newStatus == Status)
+        {
+            return Result.Success();
+        }
+
+        if (newStatus == OrderStatus.Pending)
+        {
+            return Result.Failure(OrderErrors.InvalidStatusTransition);
+        }
+
+        if (newStatus == OrderStatus.Cancelled)
+        {
+            return Cancel();
+        }
+
+        if (Status == OrderStatus.Cancelled || Status == OrderStatus.Delivered)
+        {
+            return Result.Failure(OrderErrors.InvalidStatusTransition);
+        }
+
+        var allowedTransition = Status switch
+        {
+            OrderStatus.Pending => newStatus == OrderStatus.Confirmed,
+            OrderStatus.Confirmed => newStatus == OrderStatus.InPreparation || newStatus == OrderStatus.Cancelled,
+            OrderStatus.InPreparation => newStatus == OrderStatus.OutForDelivery,
+            OrderStatus.OutForDelivery => newStatus == OrderStatus.Delivered,
+            _ => false
+        };
+
+        if (!allowedTransition)
+        {
+            return Result.Failure(OrderErrors.InvalidStatusTransition);
+        }
+
+        if (Status == OrderStatus.Pending && newStatus == OrderStatus.Confirmed)
+        {
+            return Confirm();
+        }
+
+        Status = newStatus;
+        Touch();
+        return Result.Success();
+    }
+
     private void RecalculateTotal()
     {
         var total = _items.Aggregate(Money.Zero(), (acc, item) => acc + item.Total);

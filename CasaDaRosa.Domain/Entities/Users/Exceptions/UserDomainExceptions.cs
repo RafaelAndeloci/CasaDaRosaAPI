@@ -40,3 +40,9 @@ public sealed class UserEmailConfirmationTokenExpiredException()
 
 public sealed class UserEmailAlreadyConfirmedException()
     : DomainValidationException("user.email_confirmation.already_confirmed", "User email is already confirmed.");
+
+public sealed class UserRoleInvalidTransitionException()
+    : DomainValidationException("user.role.invalid_transition", "The user role transition is invalid.");
+
+public sealed class UserStatusInvalidTransitionException()
+    : DomainValidationException("user.status.invalid_transition", "The user status transition is invalid.");

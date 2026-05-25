@@ -2,6 +2,7 @@ using System.Text;
 using CasaDaRosa.Application.Abstractions;
 using CasaDaRosa.Application.Abstractions.Contexts;
 using CasaDaRosa.Application.Abstractions.Persistence;
+using CasaDaRosa.Application.Common.Security;
 using CasaDaRosa.Infrastructure.Authentication;
 using CasaDaRosa.Infrastructure.Contexts;
 using CasaDaRosa.Domain.Entities.Carts.Services;
@@ -16,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace CasaDaRosa.Infrastructure.DependencyInjection;
 
@@ -43,11 +45,17 @@ public static class DependencyInjection
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = jwtOptions.Issuer,
                     ValidAudience = jwtOptions.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    RoleClaimType = ClaimTypes.Role,
+                    NameClaimType = ClaimTypes.NameIdentifier
                 };
             });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(AuthorizationPolicies.AdminOnly, policy =>
+                policy.RequireRole("Admin"));
+        });
         services.AddHttpContextAccessor();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped<ISecurityService, PasswordHasherSecurityService>();
