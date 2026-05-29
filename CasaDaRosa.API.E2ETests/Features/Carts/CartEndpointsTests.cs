@@ -78,6 +78,11 @@ public class CartEndpointsTests : IClassFixture<TestWebApplicationFactory>
         getBody.Should().NotBeNull();
         getBody!.Data.Id.Should().NotBeNull();
         getBody.Data.Status.Id.Should().Be(2);
+        getBody.Data.Items.Should().ContainSingle();
+        getBody.Data.Items.Single().ProductId.Should().Be(productId);
+        getBody.Data.Items.Single().Quantity.Should().Be(2);
+        getBody.Data.TotalAmount.Should().Be(50m);
+        getBody.Data.CurrencyCode.Should().Be("BRL");
     }
 
     [Fact]

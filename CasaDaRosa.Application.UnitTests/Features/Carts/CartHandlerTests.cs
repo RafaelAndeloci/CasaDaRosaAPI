@@ -36,7 +36,7 @@ public class GetMyCartQueryHandlerTests
         var cartRepository = new Mock<ICartRepository>();
 
         cartRepository
-            .Setup(repository => repository.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()))
+            .Setup(repository => repository.GetByUserIdAsync(userId, true, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Cart?)null);
 
         var handler = new GetMyCartQueryHandler(userContext, cartRepository.Object);
@@ -46,6 +46,7 @@ public class GetMyCartQueryHandlerTests
         response.Id.Should().BeNull();
         response.Items.Should().BeEmpty();
         response.TotalAmount.Should().Be(0m);
+        cartRepository.Verify(repository => repository.GetByUserIdAsync(userId, true, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -58,7 +59,7 @@ public class GetMyCartQueryHandlerTests
         var cartRepository = new Mock<ICartRepository>();
 
         cartRepository
-            .Setup(repository => repository.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()))
+            .Setup(repository => repository.GetByUserIdAsync(userId, true, It.IsAny<CancellationToken>()))
             .ReturnsAsync(cart);
 
         var handler = new GetMyCartQueryHandler(userContext, cartRepository.Object);
@@ -69,6 +70,7 @@ public class GetMyCartQueryHandlerTests
         response.Items.Should().ContainSingle();
         response.TotalAmount.Should().Be(30m);
         response.CurrencyCode.Should().Be("BRL");
+        cartRepository.Verify(repository => repository.GetByUserIdAsync(userId, true, It.IsAny<CancellationToken>()), Times.Once);
     }
 }
 
