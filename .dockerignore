@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.git/
+**/.github/
+**/TestResults/
+README.md
+Dockerfile*
+render.yaml
