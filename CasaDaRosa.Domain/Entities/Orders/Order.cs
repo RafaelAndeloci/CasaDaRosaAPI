@@ -160,7 +160,14 @@ public class Order : AuditableEntity, IAggregateRoot
 
     private void RecalculateTotal()
     {
-        var total = _items.Aggregate(Money.Zero(), (acc, item) => acc + item.Total);
+        if (_items.Count == 0)
+        {
+            TotalAmount = Money.Zero();
+            return;
+        }
+
+        var currency = _items[0].Total.Currency ?? Currency.None;
+        var total = _items.Aggregate(Money.Zero(currency), (acc, item) => acc + item.Total);
         TotalAmount = total;
     }
 }

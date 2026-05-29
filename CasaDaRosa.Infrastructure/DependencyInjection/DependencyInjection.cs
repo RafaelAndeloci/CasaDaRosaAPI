@@ -70,6 +70,7 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserContext, UserContext>();
         services.AddScoped<ICartProductEligibilityService, CartProductEligibilityService>();
+        services.AddScoped<DatabaseSeeder>();
 
         return services;
     }

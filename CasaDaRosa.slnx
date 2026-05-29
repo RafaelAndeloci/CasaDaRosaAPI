@@ -1,9 +1,1 @@
-<Solution>
-  <Folder Name="/src/">
-    <Project Path="CasaDaRosa.API/CasaDaRosa.API.csproj" Id="ef987f07-bcc4-496b-8a38-eae15aaa6c51" />
-    <Project Path="CasaDaRosa.Application/CasaDaRosa.Application.csproj" Id="274edfd3-61f7-4350-8e12-7a2a6405ea9f" />
-    <Project Path="CasaDaRosa.Domain/CasaDaRosa.Domain.csproj" />
-    <Project Path="CasaDaRosa.Infrastructure/CasaDaRosa.Infrastructure.csproj" Id="674f0974-2530-4c66-8e9e-c175235cc783" />
-  </Folder>
-  <Folder Name="/tests/" />
-</Solution>
+<Solution>`r`n  <Folder Name="/src/">`r`n    <Project Path="CasaDaRosa.API/CasaDaRosa.API.csproj" Id="ef987f07-bcc4-496b-8a38-eae15aaa6c51" />`r`n    <Project Path="CasaDaRosa.Application/CasaDaRosa.Application.csproj" Id="274edfd3-61f7-4350-8e12-7a2a6405ea9f" />`r`n    <Project Path="CasaDaRosa.Domain/CasaDaRosa.Domain.csproj" />`r`n    <Project Path="CasaDaRosa.Infrastructure/CasaDaRosa.Infrastructure.csproj" Id="674f0974-2530-4c66-8e9e-c175235cc783" />`r`n  </Folder>`r`n  <Folder Name="/tests/">`r`n    <Project Path="CasaDaRosa.Domain.UnitTests/CasaDaRosa.Domain.UnitTests.csproj" />`r`n    <Project Path="CasaDaRosa.Application.UnitTests/CasaDaRosa.Application.UnitTests.csproj" />`r`n    <Project Path="CasaDaRosa.API.E2ETests/CasaDaRosa.API.E2ETests.csproj" />`r`n  </Folder>`r`n</Solution>

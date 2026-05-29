@@ -15,7 +15,7 @@ public sealed class GetMyCartQueryHandler(IUserContext userContext, ICartReposit
             throw new UnauthorizedApplicationException();
         }
 
-        var cart = await cartRepository.GetByUserIdAsync(userContext.UserId.Value, cancellationToken: cancellationToken);
+        var cart = await cartRepository.GetByUserIdAsync(userContext.UserId.Value, includeItems: true, cancellationToken: cancellationToken);
 
         return cart is null
             ? CartResponseMapper.Empty()
